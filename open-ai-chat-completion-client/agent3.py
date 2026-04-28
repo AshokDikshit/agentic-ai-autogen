@@ -9,7 +9,7 @@ from autogen_agentchat.ui import Console
 from autogen_core import Image
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 
-model_client = OpenAIChatCompletionClient(
+gemma_model_client = OpenAIChatCompletionClient(
     model="gemma3:4b",
     base_url="http://localhost:11434/v1",
     api_key="ollama",
@@ -25,18 +25,18 @@ model_client = OpenAIChatCompletionClient(
 async def main():
     math_teacher = AssistantAgent(
         name = "MathTeacher",
-        model_client = model_client,
+        model_client = gemma_model_client,
         system_message="Behave like a teacher, explain concept clearly and ask followup questions if needed."
     )
     student = AssistantAgent(
         name = "Student",
-        model_client = model_client,
+        model_client = gemma_model_client,
         system_message="Behave like a student, ask math related questions to teacher till you satisfied."
     )
 
-    math_class = RoundRobinGroupChat(participants=[math_teacher, student], termination_condition = MaxMessageTermination(max_messages = 6))
+    math_class = RoundRobinGroupChat(name="RoundRobinGroupChat", participants=[math_teacher, student], termination_condition = MaxMessageTermination(max_messages = 6))
     await Console(math_class.run_stream(task = "Let's discuss what is addition and how it works? "))
 
-    await model_client.close()
+    await gemma_model_client.close()
 
 asyncio.run(main())
