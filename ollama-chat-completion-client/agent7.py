@@ -28,9 +28,10 @@ async def main():
         model_client = ollama_model_client
     )
     await Console(helperAgent.run_stream(task = "I come from Raipaty a small village somewhere in India. There is a lord Shiva temple near my village."))
-    state = await helperAgent.save_state()
 
+    state = await helperAgent.save_state()
     await backupAgent.load_state(state)
+
     await Console(backupAgent.run_stream(task="What is my village name?"))
 
     await ollama_model_client.close()

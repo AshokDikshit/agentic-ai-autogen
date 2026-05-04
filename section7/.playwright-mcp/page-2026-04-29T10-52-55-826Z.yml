@@ -1,0 +1,111 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - link [ref=e58] [cursor=pointer]:
+        - /url: https://about.google/?fg=1&utm_source=google-GB&utm_medium=referral&utm_campaign=hp-header
+        - text: About
+      - link [ref=e59] [cursor=pointer]:
+        - /url: https://store.google.com/GB?utm_source=hp_header&utm_medium=google_ooo&utm_campaign=GS100042&hl=en-GB
+        - text: Store
+      - generic [ref=e7]:
+        - generic [ref=e60]:
+          - link [ref=e62] [cursor=pointer]:
+            - /url: https://mail.google.com/mail/&ogbl
+            - text: Gmail
+          - link [ref=e64] [cursor=pointer]:
+            - /url: https://www.google.com/imghp?hl=en&ogbl
+            - text: Images
+        - button [ref=e65] [cursor=pointer]:
+          - img [ref=e11]
+        - link [ref=e66] [cursor=pointer]:
+          - /url: https://accounts.google.com/ServiceLogin?hl=en&passive=true&continue=https://www.google.com/&ec=futura_exp_og_so_72776762_e
+          - text: Sign in
+    - img [ref=e67]
+    - search [ref=e21]:
+      - generic [ref=e23]:
+        - generic [ref=e25]:
+          - img [ref=e29]
+          - combobox [ref=e68]
+          - generic [ref=e33]:
+            - generic [ref=e34]:
+              - button [ref=e69] [cursor=pointer]:
+                - img [ref=e36]
+              - button [ref=e70] [cursor=pointer]:
+                - img [ref=e39]
+            - link [ref=e71] [cursor=pointer]:
+              - generic [ref=e43]:
+                - img [ref=e45]
+                - generic [ref=e52]: AI Mode
+        - generic [ref=e54]:
+          - button [ref=e72] [cursor=pointer]: Google Search
+          - button [ref=e73] [cursor=pointer]: I'm Feeling Lucky
+    - contentinfo [ref=e75]:
+      - generic [ref=e76]: United Kingdom
+      - generic [ref=e77]:
+        - generic [ref=e78]:
+          - link [ref=e79] [cursor=pointer]:
+            - /url: https://www.google.com/intl/en_uk/ads/?subid=ww-ww-et-g-awa-a-g_hpafoot1_1!o2&utm_source=google.com&utm_medium=referral&utm_campaign=google_hpafooter&fg=1
+            - text: Advertising
+          - link [ref=e80] [cursor=pointer]:
+            - /url: https://www.google.com/services/?subid=ww-ww-et-g-awa-a-g_hpbfoot1_1!o2&utm_source=google.com&utm_medium=referral&utm_campaign=google_hpbfooter&fg=1
+            - text: Business
+          - link [ref=e81] [cursor=pointer]:
+            - /url: https://google.com/search/howsearchworks/?fg=1
+            - text: How Search works
+        - link [ref=e83] [cursor=pointer]:
+          - /url: https://ai.google/societal-impact/?utm_source=googlehpfooter&utm_medium=housepromos&utm_campaign=bottom-footer
+          - text: Applying AI towards science and the environment
+        - generic [ref=e84]:
+          - link [ref=e85] [cursor=pointer]:
+            - /url: https://policies.google.com/privacy?hl=en-GB&fg=1
+            - text: Privacy
+          - link [ref=e86] [cursor=pointer]:
+            - /url: https://policies.google.com/terms?hl=en-GB&fg=1
+            - text: Terms
+          - button [ref=e90] [cursor=pointer]:
+            - generic [ref=e91]: Settings
+  - generic:
+    - dialog "Before you continue to Google Search":
+      - generic [ref=e98]:
+        - generic [ref=e100]:
+          - img "Google" [ref=e101]
+          - generic [ref=e102]:
+            - 'button "Language: ‪English‬" [active] [ref=e104] [cursor=pointer]':
+              - generic [ref=e105]:
+                - img
+                - generic [ref=e106]: en
+            - link "Sign in" [ref=e107] [cursor=pointer]
+        - generic [ref=e108]:
+          - heading "Before you continue to Google" [level=1] [ref=e109]
+          - generic [ref=e110]:
+            - generic [ref=e111]:
+              - text: We use
+              - link "cookies" [ref=e112] [cursor=pointer]:
+                - /url: https://policies.google.com/technologies/cookies?utm_source=ucbs&hl=en-GB
+              - text: and data to
+              - list [ref=e113]:
+                - listitem [ref=e114]: Deliver and maintain Google services
+                - listitem [ref=e115]: Track outages and protect against spam, fraud and abuse
+                - listitem [ref=e116]: Measure audience engagement and site statistics to understand how our services are used and enhance the quality of those services
+            - generic [ref=e117]:
+              - text: If you choose to 'Accept all', we will also use cookies and data to
+              - list [ref=e118]:
+                - listitem [ref=e119]: Develop and improve new services
+                - listitem [ref=e120]: Deliver and measure the effectiveness of ads
+                - listitem [ref=e121]: Show personalised content, depending on your settings
+                - listitem [ref=e122]: Show personalised ads, depending on your settings
+              - generic [ref=e123]: If you choose to 'Reject all', we will not use cookies for these additional purposes.
+            - generic [ref=e124]: Non-personalised content is influenced by things like the content that you’re currently viewing, activity in your active Search session, and your location. Non-personalised ads are influenced by the content that you’re currently viewing and your general location. Personalised content and ads can also include more relevant results, recommendations and tailored ads based on past activity from this browser, like previous Google searches. We also use cookies and data to tailor the experience to be age-appropriate, if relevant.
+            - generic [ref=e125]: Select 'More options' to see additional information, including details about managing your privacy settings. You can also visit g.co/privacytools at any time.
+        - generic [ref=e126]:
+          - generic [ref=e127]:
+            - button "Reject all" [ref=e128] [cursor=pointer]
+            - button "Accept all" [ref=e129] [cursor=pointer]
+          - link "More options for personalisation settings and cookies" [ref=e131] [cursor=pointer]:
+            - generic "More options for personalisation settings and cookies" [ref=e132]: More options
+        - generic [ref=e133]:
+          - link "Privacy" [ref=e134] [cursor=pointer]:
+            - /url: https://policies.google.com/privacy?hl=en-GB&fg=1&utm_source=ucbs
+          - generic [ref=e135]: ·
+          - link "Terms" [ref=e136] [cursor=pointer]:
+            - /url: https://policies.google.com/terms?hl=en-GB&fg=1&utm_source=ucbs
