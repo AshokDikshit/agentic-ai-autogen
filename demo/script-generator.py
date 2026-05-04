@@ -25,7 +25,7 @@ ollama_chat_completion_model = OllamaChatCompletionClient(
 async def generate_bdd_with_step_library(
         step_def_folder: str,
         acceptance_criteria: str,
-        test_scenario_variations: str,
+        scenario_requirement: str,
         output_file: str = "generated_feature.feature"
 ) -> str:
     """
@@ -47,13 +47,27 @@ async def generate_bdd_with_step_library(
     # Create BDD agent
     bdd_agent = AssistantAgent(
         name="BDD_Feature_Writer",
-        system_message="""
-You are an expert BDD test automation engineer.
-Create comprehensive Gherkin feature files using ONLY the provided step definitions.
-Break down actions into atomic steps. Create multiple scenario variations.
-Never invent new steps - use only what's provided in the step library.
-""",
-        model_client=ollama_chat_completion_model
+        model_client=ollama_chat_completion_model,
+        system_message=f"""
+        You are an expert BDD test automation engineer. Your ONLY task is to map Acceptance Criteria to a specific Gherkin Step Library.
+
+        ### STRICT RULES:
+        1. USE ONLY the provided Step Definitions. 
+        2. Include proper synchronization (waits, scrolls)        
+        3. ATOMICITY: Break down every Acceptance Criterion into the smallest possible actions.
+        4. SYNTAX: Follow the Gherkin standard (Feature, Scenario, Given, When, Then, And).
+        5. FORMATTING: Output the Feature file content ONLY. Do not provide explanations or chat.
+        6. BDD TAGS: Add appropriate tags (@smoke, @regression, @mobile, etc.)
+        
+        ### EXECUTION EXAMPLE:
+        Follow the exact pattern of the provided step library. Wrap element name and value in double quotes as given example below.
+        Example pattern: 
+            When I type "text" into "element" field
+            Then "expected_text" should be visible
+
+        ### AVAILABLE STEP DEFINITIONS:
+        {step_library}
+        """
     )
 
     user_proxy = UserProxyAgent(
@@ -62,14 +76,6 @@ Never invent new steps - use only what's provided in the step library.
 
     # Create task with step library
     task = f"""
-TASK: Create BDD feature file from acceptance criteria using ONLY the steps below.
-
-{'=' * 80}
-AVAILABLE STEP DEFINITIONS:
-{'=' * 80}
-
-{step_library}
-
 {'=' * 80}
 ACCEPTANCE CRITERIA:
 {'=' * 80}
@@ -77,54 +83,49 @@ ACCEPTANCE CRITERIA:
 {'=' * 80}
 REQUIREMENTS:
 {'=' * 80}
-1. Use ONLY steps from the library above
-2. Break actions into atomic steps
-3. Include proper synchronization (waits, scrolls)
-4. Add appropriate tags (@smoke, @regression, @mobile, etc.)
-
-{test_scenario_variations}
+{scenario_requirement}
+{'=' * 80}
+\nTASK: Create BDD feature file from acceptance criteria using ONLY the steps below.   
 """
     feature_file_creator = RoundRobinGroupChat(name = "Create_Executable_Gherkin", participants = [user_proxy, bdd_agent],
-                                               termination_condition = TextMentionTermination("Executable Gherkin files created"))
+                                               termination_condition = TextMentionTermination("Feature files created"))
     await Console(feature_file_creator.run_stream(task = task))
     await ollama_chat_completion_model.close()
-    return "Executable Gherkin files created."
-
+    return "Feature files created"
 
 # Example Usage
 async def main():
     print(project_root)
     step_definitions = project_root + "/tests/step-definitions"
 
+    scenario_requirement = """
+    Create test scenario variations:
+       - Basic happy path
+       - Negative Scenarios - Invalid Email
+       - Negative Scenarios - Invalid Password
+    """
     acceptance_criteria = """
-AC1: Successful Registration with Mandatory Fields
-* Given I am on the registration page
-* When I enter valid data in all mandatory fields:
-   * First Name
-   * Last Name
-   * Email Address
-   * Password
-   * Confirm Password
-   * Mobile Number
-   * Accept Terms & Conditions checkbox
-* And I click "Create Account" button
-* Then I should see a success message "Account created successfully"
-* And I should receive a verification email
-* And I should be redirected to the email verification page
-"""
-
-    test_scenario_variations = """
-Create test scenario variations:
-   - Basic happy path
-   - Negative Scenarios - Invalid Email
-   - Negative Scenarios - Invalid Password
+    AC1: Successful Registration with Mandatory Fields
+    * Given I am on the registration page
+    * When I enter valid data in all mandatory fields:
+       * First Name
+       * Last Name
+       * Email Address
+       * Password
+       * Confirm Password
+       * Mobile Number
+       * Accept Terms & Conditions checkbox
+    * And I click "Create Account" button
+    * Then I should see a success message "Account created successfully"
+    * And I should receive a verification email
+    * And I should be redirected to the email verification page
     """
 
     # Generate feature file using step definitions from folder
     feature = await generate_bdd_with_step_library(
         step_def_folder=step_definitions,
         acceptance_criteria=acceptance_criteria,
-        test_scenario_variations=test_scenario_variations,
+        scenario_requirement=scenario_requirement,
         output_file="registration.feature"
     )
 
