@@ -15,9 +15,9 @@ ollama_chat_completion_model = OllamaChatCompletionClient(
     model_info = {
         "family": "llama",
         "vision": True,
+        "json_output": True,
         "function_calling": True,
         "structured_output": True,
-        "json_output": True,
         "multiple_system_messages": True
     }
 )
@@ -37,6 +37,10 @@ async def generate_bdd_with_step_library(
 
     Returns:
         Generated feature file content
+        :param output_file:
+        :param step_def_folder:
+        :param acceptance_criteria:
+        :param scenario_requirement:
     """
 
     # Load step definitions from folder
@@ -76,26 +80,28 @@ async def generate_bdd_with_step_library(
 
     # Create task with step library
     task = f"""
-{'=' * 80}
-ACCEPTANCE CRITERIA:
-{'=' * 80}
-{acceptance_criteria}
-{'=' * 80}
-REQUIREMENTS:
-{'=' * 80}
-{scenario_requirement}
-{'=' * 80}
-\nTASK: Create BDD feature file from acceptance criteria using ONLY the steps below.   
-"""
+    {'=' * 80}
+    ACCEPTANCE CRITERIA:
+    {'=' * 80}
+    {acceptance_criteria}
+    {'=' * 80}
+    REQUIREMENTS:
+    {'=' * 80}
+    {scenario_requirement}
+    {'=' * 80}
+    \nTASK: Create BDD feature file from acceptance criteria using ONLY the steps below.   
+    """
+
     feature_file_creator = RoundRobinGroupChat(name = "Create_Executable_Gherkin", participants = [user_proxy, bdd_agent],
                                                termination_condition = TextMentionTermination("Feature files created"))
+
     await Console(feature_file_creator.run_stream(task = task))
     await ollama_chat_completion_model.close()
     return "Feature files created"
 
 # Example Usage
 async def main():
-    print(project_root)
+
     step_definitions = project_root + "/tests/step-definitions"
 
     scenario_requirement = """
@@ -104,6 +110,7 @@ async def main():
        - Negative Scenarios - Invalid Email
        - Negative Scenarios - Invalid Password
     """
+
     acceptance_criteria = """
     AC1: Successful Registration with Mandatory Fields
     * Given I am on the registration page

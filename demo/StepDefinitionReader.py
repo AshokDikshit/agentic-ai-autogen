@@ -4,7 +4,6 @@ from typing import List, Dict, Set
 from pathlib import Path
 import json
 
-
 class StepDefinitionReader:
     """
     Reads and parses step definition files to extract available BDD steps.
@@ -23,33 +22,6 @@ class StepDefinitionReader:
         self.step_patterns = []
         self.step_types = {'Given': [], 'When': [], 'Then': []}
         self.raw_content = ""
-
-    def read_all_files(self) -> Dict:
-        """
-        Read all step definition files from the folder
-
-        Returns:
-            Dictionary containing all extracted step information
-        """
-        if not self.folder_path.exists():
-            raise FileNotFoundError(f"Folder not found: {self.folder_path}")
-
-        # Supported file extensions
-        supported_extensions = ['.ts', '.js', '.py', '.java']
-
-        # Find all step definition files
-        step_files = []
-        for ext in supported_extensions:
-            step_files.extend(self.folder_path.glob(f'**/*{ext}'))
-
-        print(f"📁 Found {len(step_files)} step definition files")
-
-        # Read and parse each file
-        for file_path in step_files:
-            print(f"📄 Reading: {file_path.name}")
-            self._parse_file(file_path)
-
-        return self._compile_results()
 
     def _parse_file(self, file_path: Path):
         """Parse a single step definition file"""
@@ -207,6 +179,71 @@ class StepDefinitionReader:
             'raw_content': self.raw_content
         }
 
+    def _categorize_steps(self) -> Dict[str, List]:
+        """Categorize steps by their action type"""
+        categories = {
+            'NAVIGATION': [],
+            'CLICK ACTIONS': [],
+            'TEXT INPUT': [],
+            'WAIT CONDITIONS': [],
+            'FORM INTERACTIONS': [],
+            'MOBILE GESTURES': [],
+            'ASSERTIONS': [],
+            'OTHER': []
+        }
+
+        keywords = {
+            'NAVIGATION': ['navigate', 'go back', 'go forward', 'refresh', 'reload', 'switch', 'open', 'close'],
+            'CLICK ACTIONS': ['click', 'double click', 'right click', 'hover'],
+            'TEXT INPUT': ['type', 'enter', 'clear', 'select all'],
+            'WAIT CONDITIONS': ['wait for', 'wait'],
+            'FORM INTERACTIONS': ['check', 'uncheck', 'select', 'dropdown', 'upload', 'submit'],
+            'MOBILE GESTURES': ['swipe', 'pinch', 'zoom', 'rotate', 'shake', 'lock'],
+            'ASSERTIONS': ['should see', 'should be', 'should contain', 'verify', 'assert']
+        }
+
+        for step in self.step_definitions:
+            pattern_lower = step['pattern'].lower()
+            categorized = False
+
+            for category, keys in keywords.items():
+                if any(key in pattern_lower for key in keys):
+                    categories[category].append(step)
+                    categorized = True
+                    break
+
+            if not categorized:
+                categories['OTHER'].append(step)
+
+        return categories
+
+    def read_all_files(self) -> Dict:
+        """
+        Read all step definition files from the folder
+
+        Returns:
+            Dictionary containing all extracted step information
+        """
+        if not self.folder_path.exists():
+            raise FileNotFoundError(f"Folder not found: {self.folder_path}")
+
+        # Supported file extensions
+        supported_extensions = ['.ts', '.js', '.py', '.java']
+
+        # Find all step definition files
+        step_files = []
+        for ext in supported_extensions:
+            step_files.extend(self.folder_path.glob(f'**/*{ext}'))
+
+        print(f"📁 Found {len(step_files)} step definition files")
+
+        # Read and parse each file
+        for file_path in step_files:
+            print(f"📄 Reading: {file_path.name}")
+            self._parse_file(file_path)
+
+        return self._compile_results()
+
     def get_formatted_step_library(self) -> str:
         """
         Get a formatted string of all available steps for AI agent consumption
@@ -265,44 +302,6 @@ class StepDefinitionReader:
 
         return "\n".join(output)
 
-    def _categorize_steps(self) -> Dict[str, List]:
-        """Categorize steps by their action type"""
-        categories = {
-            'NAVIGATION': [],
-            'CLICK ACTIONS': [],
-            'TEXT INPUT': [],
-            'WAIT CONDITIONS': [],
-            'FORM INTERACTIONS': [],
-            'MOBILE GESTURES': [],
-            'ASSERTIONS': [],
-            'OTHER': []
-        }
-
-        keywords = {
-            'NAVIGATION': ['navigate', 'go back', 'go forward', 'refresh', 'reload', 'switch', 'open', 'close'],
-            'CLICK ACTIONS': ['click', 'double click', 'right click', 'hover'],
-            'TEXT INPUT': ['type', 'enter', 'clear', 'select all'],
-            'WAIT CONDITIONS': ['wait for', 'wait'],
-            'FORM INTERACTIONS': ['check', 'uncheck', 'select', 'dropdown', 'upload', 'submit'],
-            'MOBILE GESTURES': ['swipe', 'pinch', 'zoom', 'rotate', 'shake', 'lock'],
-            'ASSERTIONS': ['should see', 'should be', 'should contain', 'verify', 'assert']
-        }
-
-        for step in self.step_definitions:
-            pattern_lower = step['pattern'].lower()
-            categorized = False
-
-            for category, keys in keywords.items():
-                if any(key in pattern_lower for key in keys):
-                    categories[category].append(step)
-                    categorized = True
-                    break
-
-            if not categorized:
-                categories['OTHER'].append(step)
-
-        return categories
-
     def export_to_json(self, output_file: str):
         """Export step definitions to JSON file"""
         results = self._compile_results()
@@ -323,7 +322,6 @@ class StepDefinitionReader:
             'files_processed': len(set(s['file'] for s in self.step_definitions))
         }
 
-
 # ============================================================================
 # USAGE FUNCTIONS
 # ============================================================================
@@ -340,7 +338,6 @@ def load_step_definitions(folder_path: str) -> StepDefinitionReader:
     """
     reader = StepDefinitionReader(folder_path)
     reader.read_all_files()
-
     # Print statistics
     stats = reader.get_statistics()
     print("\n" + "=" * 60)
@@ -353,9 +350,7 @@ def load_step_definitions(folder_path: str) -> StepDefinitionReader:
     print(f"Unique Patterns: {stats['unique_patterns']}")
     print(f"Files Processed: {stats['files_processed']}")
     print("=" * 60 + "\n")
-
     return reader
-
 
 def get_step_library_for_agent(folder_path: str) -> str:
     """
@@ -370,7 +365,6 @@ def get_step_library_for_agent(folder_path: str) -> str:
     reader = load_step_definitions(folder_path)
     return reader.get_step_library_for_llm()
 
-
 def get_raw_step_content(folder_path: str) -> str:
     """
     Get raw content of all step definition files
@@ -384,4 +378,3 @@ def get_raw_step_content(folder_path: str) -> str:
     """
     reader = load_step_definitions(folder_path)
     return reader.raw_content
-
